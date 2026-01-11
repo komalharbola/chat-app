@@ -9,5 +9,14 @@
 Installation & Setup1️⃣ Clone the repository 
 git clone https://github.com/your-username/chat-app.git](https://github.com/komalharbola/chat-app.git
 cd chat-app
-
+cd client
+npm i
+cd ../
+cd server
+npm i
+npm start
+open new terminal
+cd chat-app
+cd client
+npm run dev
 
