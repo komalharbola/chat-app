@@ -8,7 +8,7 @@ export const getUserForSidebar = async (req, res) => {
   try {
     const userId = req.user._id;
     const filteredUsers = await User.find({ _id: { $ne: userId } }).select(
-      "-password"
+      "-password",
     );
     //count no. of msgs not seen
     const unseenMessages = {};
@@ -46,7 +46,7 @@ export const getMessages = async (req, res) => {
       { senderId: selectedUserId, receiverId: myId },
       {
         seen: true,
-      }
+      },
     );
     res.json({ success: true, messages });
   } catch (error) {
@@ -86,14 +86,16 @@ export const sendMessage = async (req, res) => {
       image: imageUrl,
     });
     //emit the new msg to the receiver's socket
-    const receiverSocketId = userSocketMap[receiverId];
-    if (receiverSocketId) {
-      io.to(receiverSocketId).emit("newMessage", newMessage);
+    const receiverSocketIds = userSocketMap[receiverId];
+    if (receiverSocketIds) {
+      receiverSocketIds.forEach((socketId) => {
+        io.to(socketId).emit("newMessage", newMessage);
+      });
     }
-    res.json({ success: true, newMessage });
+    return res.json({ success: true, newMessage });
   } catch (error) {
     console.log(error.message);
 
-    res.json({ success: false, message: error.message });
+    return res.json({ success: false, message: error.message });
   }
 };
